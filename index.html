@@ -70,6 +70,13 @@
       line-height: 1.7;
     }
 
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      align-items: start;
+    }
+
     .site-button {
       display: inline-block;
       background: linear-gradient(90deg, var(--primary), var(--accent));
@@ -83,7 +90,7 @@
       box-shadow: 0 2px 12px rgba(37, 99, 235, 0.15);
       transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
       cursor: pointer;
-      margin-top: 1.3em;
+      margin-top: 0;
       letter-spacing: 0.5px;
       text-decoration: none;
     }
@@ -113,6 +120,9 @@
       h2 {
         font-size: 1.25rem;
       }
+      .button-group {
+        align-items: stretch;
+      }
     }
   </style>
 </head>
@@ -128,9 +138,14 @@
       <br>
       Easily customize this template for your projects or personal use.
     </div>
-    <a class="site-button" href="https://sites.google.com/student.cms.k12.nc.us/edition-gaming/home" target="_blank" rel="noopener">
-      Visit Edition Gaming 
-    </a>
+    <div class="button-group">
+      <a class="site-button" href="https://sites.google.com/student.cms.k12.nc.us/edition-gaming/home" target="_blank" rel="noopener">
+        Visit Edition Gaming 
+      </a>
+      <a class="site-button" href="https://sites.google.com/student.cms.k12.nc.us/ultragaming/home" target="_blank" rel="noopener">
+        Visit UltraGaming 
+      </a>
+    </div>
   </main>
   <footer>
     &copy; 2025 AstroGames. Inspired by Google Sites.
