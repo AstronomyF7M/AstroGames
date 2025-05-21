@@ -222,6 +222,81 @@
       margin-right: 0;
     }
 
+    /* Credits area styles */
+    .credits-area {
+      margin-top: 3.5em;
+      padding: 2.2em 2.5em 1.2em 2.5em;
+      background: rgba(20,30,40,0.98);
+      border: 5px dashed var(--pixel-green);
+      border-radius: 18px;
+      box-shadow: 0 0 16px var(--neon-blue), 0 0 32px var(--pixel-pink);
+      text-align: center;
+      font-size: 1rem;
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      color: var(--pixel-white);
+      letter-spacing: 2.5px;
+    }
+    .credits-list {
+      display: flex;
+      gap: 3.2em;
+      justify-content: center;
+      margin-top: 1.2em;
+      flex-wrap: wrap;
+    }
+    .credit-name {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      color: var(--pixel-yellow);
+      transition: color 0.2s;
+      text-shadow: 0 0 8px var(--neon-blue);
+      border-bottom: 3px dotted var(--pixel-pink);
+      padding: 0.2em 0.8em;
+      font-size: 1.05em;
+    }
+    .credit-name:hover,
+    .credit-name:focus {
+      color: var(--pixel-green);
+      border-bottom: 3px solid var(--neon-purple);
+      z-index: 4;
+    }
+    .credit-dropdown {
+      display: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 2.5em;
+      min-width: 270px;
+      background: linear-gradient(135deg, var(--main-bg) 80%, var(--neon-blue) 140%);
+      border: 3px solid var(--pixel-pink);
+      border-radius: 11px;
+      box-shadow: 0 0 16px var(--pixel-pink), 0 0 8px var(--neon-blue);
+      color: var(--pixel-yellow);
+      font-size: 0.95em;
+      padding: 1.3em 1.2em;
+      z-index: 5;
+      text-align: left;
+      text-shadow: 0 0 7px var(--neon-blue);
+      line-height: 1.8;
+      letter-spacing: 1.2px;
+      animation: dropdownAppear 0.22s;
+      font-family: 'Press Start 2P', cursive;
+      pointer-events: none;
+    }
+    .credit-name:hover .credit-dropdown,
+    .credit-name:focus .credit-dropdown {
+      display: block;
+      pointer-events: auto;
+    }
+    @keyframes dropdownAppear {
+      0% { opacity: 0; transform: translateX(-50%) scale(0.8);}
+      100% { opacity: 1; transform: translateX(-50%) scale(1);}
+    }
+
     footer {
       text-align: center;
       color: var(--pixel-green);
@@ -240,6 +315,8 @@
       .site-links { flex-direction: column; gap: 1.6em;}
       .pixel-blocks { display: none;}
       .desc { padding: 1em 0.7em; font-size: 1rem;}
+      .credits-area { padding: 1.2em 0.4em 0.7em 0.4em; }
+      .credit-dropdown { font-size: 0.89em; min-width: 160px; }
     }
     @media (max-width: 600px) {
       header { margin-top: 1.2em; margin-bottom: 1.5em;}
@@ -250,6 +327,7 @@
       main { padding: 0.5em 0.1em;}
       .desc { font-size: 0.9rem;}
       .tiny-text { font-size: 0.55rem;}
+      .credits-area { font-size: 0.77rem; }
     }
   </style>
 </head>
@@ -285,6 +363,29 @@
       <a class="site-button" href="https://ccported.github.io/" target="_blank" rel="noopener">
         <span style="font-size:1.12em;">💾</span> CCPorted
       </a>
+    </div>
+    <div class="credits-area">
+      <strong>Credits</strong>
+      <div class="credits-list">
+        <span class="credit-name" tabindex="0">
+          AstronomyF7M
+          <span class="credit-dropdown">
+            <strong>AstronomyF7M</strong><br>
+            Creator &amp; owner of AstroGames and Edition Gaming.<br>
+            Designer, visionary, and the pixel mastermind behind this site.<br>
+            <span style="color:var(--pixel-green);">Bringing cosmic creativity to the world!</span>
+          </span>
+        </span>
+        <span class="credit-name" tabindex="0">
+          skaberson
+          <span class="credit-dropdown">
+            <strong>skaberson</strong><br>
+            Owner of UltraGaming.<br>
+            Coding wizard, collaborator, and digital adventurer.<br>
+            <span style="color:var(--pixel-pink);">Turning code into epic gaming universes!</span>
+          </span>
+        </span>
+      </div>
     </div>
   </main>
   <footer>
