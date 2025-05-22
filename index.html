@@ -436,3 +436,169 @@
 </html>
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="icon" type="image/png" href="favicon.png">
+<!-- Add in your <body> as usual -->
+<body>
+  <!-- ...your existing code... -->
+  <!-- Hidden 3D Shooter Game Modal -->
+  <div id="shooterModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:900;background:rgba(10,16,32,0.97);justify-content:center;align-items:center;flex-direction:column;">
+    <button id="closeShooter" style="position:absolute;top:30px;right:50px;z-index:9999;font-size:1.2em;padding:0.7em 2em;font-family:'Press Start 2P',cursive;background:linear-gradient(90deg,#ff3cac,#00f6ff);color:#fff;border:3px solid #fff100;border-radius:12px;box-shadow:0 0 8px #00f6ff;cursor:pointer;">Exit Game</button>
+    <div id="shooterContainer" style="width:80vw;height:80vh;max-width:900px;max-height:600px;background:#111;border:8px solid #00f6ff;border-radius:24px;box-shadow:0 0 44px #00f6ff,0 0 12px #ff3cac;overflow:hidden;position:relative;"></div>
+    <div style="color:#fff100;font-family:'Press Start 2P',cursive;font-size:0.9em;margin-top:1.5em;text-align:center;">Use <b>WASD</b> to move, <b>Mouse</b> to aim, <b>Click</b> to shoot! Survive the pixel invaders!</div>
+  </div>
+  <!-- ...your existing code... -->
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.151.3/build/three.min.js"></script>
+  <script>
+    // --- Konami Code Easter Egg Logic ---
+    const konamiCode = [38,38,40,40,37,39,37,39,66,65];
+    let konamiIndex = 0;
+    document.addEventListener('keydown', function(e) {
+      if (e.keyCode === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          openShooterGame();
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+
+    // --- Pixel Star Easter Egg ---
+    setTimeout(() => {
+      // Pick a random star to make "special"
+      const stars = document.querySelectorAll('.pixel-star');
+      if(stars.length) {
+        const secretStar = stars[Math.floor(Math.random()*stars.length)];
+        secretStar.style.boxShadow += ',0 0 18px #fff100,0 0 5px #ff3cac';
+        secretStar.style.cursor = 'pointer';
+        secretStar.title = 'You found a secret pixel!';
+        secretStar.addEventListener('click', function(e){
+          alert('🌟 Secret Star Found!\nYou are a cosmic pixel explorer!');
+        }, { once: true });
+      }
+    },800);
+
+    // --- 3D Shooter Game Modal ---
+    function openShooterGame() {
+      document.getElementById('shooterModal').style.display = 'flex';
+      if (!window.shooterLoaded) {
+        loadShooterGame();
+        window.shooterLoaded = true;
+      }
+    }
+    document.getElementById('closeShooter').onclick = function(){
+      document.getElementById('shooterModal').style.display = 'none';
+      // Optionally pause/stop the game
+      if(window.shooterStop) window.shooterStop();
+    }
+
+    // --- Lightweight 3D Shooter Game ---
+    function loadShooterGame() {
+      // Basic Three.js FPS shooter with cubes as enemies
+      const container = document.getElementById('shooterContainer');
+      // Clean if reloaded
+      container.innerHTML = "";
+      // Setup scene
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a1020);
+      const camera = new THREE.PerspectiveCamera(75, container.offsetWidth/container.offsetHeight, 0.1, 1000);
+      camera.position.z = 20;
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(container.offsetWidth, container.offsetHeight);
+      container.appendChild(renderer.domElement);
+
+      // Player
+      const playerGeo = new THREE.BoxGeometry(2,2,2);
+      const playerMat = new THREE.MeshBasicMaterial({color:0x00ff9f});
+      const player = new THREE.Mesh(playerGeo, playerMat);
+      player.position.y = -8;
+      scene.add(player);
+
+      // Enemies
+      let enemies = [];
+      function spawnEnemy() {
+        const geo = new THREE.BoxGeometry(2,2,2);
+        const mat = new THREE.MeshBasicMaterial({color:0xff3cac});
+        const enemy = new THREE.Mesh(geo, mat);
+        enemy.position.x = (Math.random()-0.5)*30;
+        enemy.position.y = 13 + Math.random()*10;
+        enemy.position.z = (Math.random()-0.5)*5;
+        scene.add(enemy);
+        enemies.push(enemy);
+      }
+      for(let i=0;i<5;i++) spawnEnemy();
+
+      // Bullets
+      let bullets = [];
+      function shootBullet() {
+        const geo = new THREE.BoxGeometry(0.6,1.8,0.6);
+        const mat = new THREE.MeshBasicMaterial({color:0xffff00});
+        const bullet = new THREE.Mesh(geo, mat);
+        bullet.position.set(player.position.x, player.position.y+1.5, 0);
+        scene.add(bullet);
+        bullets.push(bullet);
+      }
+
+      // Controls
+      let keys = {};
+      window.addEventListener('keydown', e=>{keys[e.key.toLowerCase()]=true;});
+      window.addEventListener('keyup', e=>{keys[e.key.toLowerCase()]=false;});
+      renderer.domElement.addEventListener('click', shootBullet);
+
+      // Mouse aim
+      renderer.domElement.addEventListener('mousemove', e=>{
+        const rect = renderer.domElement.getBoundingClientRect();
+        let mx = ((e.clientX-rect.left)/rect.width)*2-1;
+        player.position.x = mx*15;
+      });
+
+      // Main loop
+      let gameOver = false, score = 0;
+      function animateShooter() {
+        if(gameOver) return;
+        requestAnimationFrame(animateShooter);
+
+        // Player movement
+        if(keys['a'] && player.position.x > -17) player.position.x -= 0.5;
+        if(keys['d'] && player.position.x < 17) player.position.x += 0.5;
+
+        // Move enemies
+        for(let i=enemies.length-1;i>=0;i--){
+          let en = enemies[i];
+          en.position.y -= 0.13 + Math.random()*0.1;
+          if(en.position.y < -12) {
+            en.position.y = 15 + Math.random()*8; en.position.x = (Math.random()-0.5)*30;
+          }
+          // Collision with player
+          if(Math.abs(en.position.x-player.position.x)<2 && Math.abs(en.position.y-player.position.y)<2){
+            gameOver = true;
+            setTimeout(()=>alert('Game Over!\nScore: '+score+'\nPress Konami Code to play again!'),100);
+          }
+        }
+
+        // Move bullets
+        for(let i=bullets.length-1;i>=0;i--){
+          let b = bullets[i];
+          b.position.y += 0.9;
+          // Bullet out of bounds
+          if(b.position.y > 20) { scene.remove(b); bullets.splice(i,1); continue; }
+          // Bullet hits enemy
+          for(let j=enemies.length-1;j>=0;j--){
+            let en = enemies[j];
+            if(Math.abs(b.position.x-en.position.x)<2 && Math.abs(b.position.y-en.position.y)<2){
+              scene.remove(en); scene.remove(b);
+              enemies.splice(j,1); bullets.splice(i,1);
+              score++;
+              spawnEnemy();
+              break;
+            }
+          }
+        }
+        renderer.render(scene, camera);
+      }
+      animateShooter();
+      window.shooterStop = ()=>{gameOver=true;};
+    }
+  </script>
+</body>
